@@ -141,23 +141,4 @@ class HomeModel extends ChangeNotifier {
   }
 }
 
-enum NoteType {
-  text,
-  markdown,
-  html,
-}
 
-extension NoteTypeExtension on NoteType {
-  String get value {
-    switch (this) {
-      case NoteType.text:
-        return "text";
-      case NoteType.markdown:
-        return "markdown";
-      case NoteType.html:
-        return "html";
-      default:
-        return "";
-    }
-  }
-}

@@ -58,6 +58,8 @@ class NoteCard extends StatelessWidget {
                           style: TextStyle(color: Colors.black87),
                         ),
                         onTap: () {
+                          Navigator.of(context).pop();
+
                           Navigator.of(context).push(
                             SlideAnimationRoute(
                               builder: (context) => NoteScreen(
