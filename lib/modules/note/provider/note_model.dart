@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
 class NoteModel extends ChangeNotifier {
+  String _title = '';
   double _textSize = 15;
+  bool checkboxStatus = false;
 
   double get textSize => _textSize;
+
+  String get title => _title;
+
+  set setTitle(String title) => _title = title;
 
   void increaseTextSize(BuildContext context) {
     if (_textSize > 30) {
@@ -23,6 +29,14 @@ class NoteModel extends ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  void editTitle(String title) {}
+
+  void changeHelperButton(bool value) {
+    checkboxStatus = value;
+
+    notifyListeners();
   }
 
   void showSnacbar(BuildContext context, String text) {

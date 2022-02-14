@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:note_app/modules/note/view/note_preview_screen.dart';
 import 'package:note_app/utils/color_utils.dart';
 import 'package:note_app/utils/slide_animation.dart';
+import 'package:note_app/widgets/default_listtile_widget.dart';
 
 import '../../../data/models/note.dart';
-import '../../note/view/note_screen.dart';
+import '../../note/view/note_edit_screen.dart';
 
 class NoteCard extends StatelessWidget {
   final int index;
@@ -32,6 +34,17 @@ class NoteCard extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+        onTap: () {
+          Navigator.of(context).push(
+            SlideAnimationRoute(
+              builder: (context) => NotePreviewScreen(
+                title: note.title,
+                content: note.content,
+                type: note.type,
+              ),
+            ),
+          );
+        },
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -42,39 +55,32 @@ class NoteCard extends StatelessWidget {
                   isScrollControlled: true,
                   builder: (context) => Wrap(
                     children: [
-                      ListTile(
-                        leading: const Icon(Icons.info_outline, color: Colors.black87),
-                        title: const Text(
-                          'Info',
-                          style: TextStyle(color: Colors.black87),
+                      DefaultListTileWidget(
+                        title: 'Info',
+                        icon: const Icon(Icons.info_outline),
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => const Dialog(),
                         ),
-                        onTap: () =>
-                            showDialog(context: context, builder: (context) => const Dialog()),
                       ),
-                      ListTile(
-                        leading: const Icon(Icons.edit_outlined, color: Colors.black87),
-                        title: const Text(
-                          'Edit',
-                          style: TextStyle(color: Colors.black87),
-                        ),
+                      DefaultListTileWidget(
+                        title: 'Edit',
+                        icon: const Icon(Icons.edit_outlined),
                         onTap: () {
                           Navigator.of(context).pop();
 
                           Navigator.of(context).push(
                             SlideAnimationRoute(
-                              builder: (context) => NoteScreen(
+                              builder: (context) => NoteEditScreen(
                                 index: index,
                               ),
                             ),
                           );
                         },
                       ),
-                      ListTile(
-                        leading: const Icon(Icons.delete_outline, color: Colors.black87),
-                        title: const Text(
-                          'Delete',
-                          style: TextStyle(color: Colors.black87),
-                        ),
+                      DefaultListTileWidget(
+                        icon: const Icon(Icons.delete_outline),
+                        title: 'Delete',
                         onTap: () {
                           showDialog(
                             context: context,
@@ -102,13 +108,10 @@ class NoteCard extends StatelessWidget {
                           ).then((_) => Navigator.pop(context));
                         },
                       ),
-                      ListTile(
-                        leading: const Icon(Icons.cancel_outlined, color: Colors.black87),
-                        title: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.black87),
-                        ),
-                        onTap: () => Navigator.pop(context),
+                      DefaultListTileWidget(
+                        title: 'Cancel',
+                        icon: const Icon(Icons.cancel_outlined),
+                        onTap: () => Navigator.of(context).pop(),
                       ),
                     ],
                   ),
@@ -124,7 +127,6 @@ class NoteCard extends StatelessWidget {
             ),
           ],
         ),
-        onTap: () {},
       ),
     );
   }

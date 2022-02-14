@@ -6,9 +6,6 @@ import 'package:note_app/utils/color_utils.dart';
 import '../../../data/models/note.dart';
 
 class HomeModel extends ChangeNotifier {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
-
   Color textButtonColor = Colors.transparent;
   Widget textButtonChild = const Text(
     'Text',
@@ -132,13 +129,4 @@ class HomeModel extends ChangeNotifier {
 
     return await box.add(note);
   }
-
-  @override
-  void dispose() {
-    titleController.dispose();
-    descriptionController.dispose();
-    super.dispose();
-  }
 }
-
-

@@ -2,24 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:note_app/data/models/note.dart';
 import 'package:note_app/exception/not_selected_type.dart';
 import 'package:note_app/modules/home/provider/home_model.dart';
-import 'package:note_app/modules/note/view/note_screen.dart';
+import 'package:note_app/modules/note/view/note_edit_screen.dart';
 import 'package:note_app/utils/color_utils.dart';
 import 'package:note_app/utils/size_utils.dart';
 import 'package:note_app/utils/slide_animation.dart';
+import 'package:note_app/widgets/default_textfield_widget.dart';
 
 import 'dart:math' as math;
 
 import 'package:provider/provider.dart';
 
-class CreateNoteSheet extends StatelessWidget {
+class CreateNoteSheet extends StatefulWidget {
   const CreateNoteSheet({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    var titleController = Provider.of<HomeModel>(context, listen: false).titleController;
-    var descriptionController =
-        Provider.of<HomeModel>(context, listen: false).descriptionController;
+  State<CreateNoteSheet> createState() => _CreateNoteSheetState();
+}
 
+class _CreateNoteSheetState extends State<CreateNoteSheet> {
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+
+  @override
+  void initState() {
+    _titleController = TextEditingController();
+    _descriptionController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       padding: const EdgeInsets.all(SizeUtils.defaultPadding),
@@ -44,16 +63,17 @@ class CreateNoteSheet extends StatelessWidget {
               ),
             ],
           ),
-          textField(
-            controller: titleController,
+          DefaultTextFieldWidget(
+            controller: _titleController,
             hintText: 'Title',
             fontWeight: FontWeight.w500,
             textSize: 20,
           ),
-          textField(
-            controller: descriptionController,
+          DefaultTextFieldWidget(
+            controller: _descriptionController,
             hintText: 'Description',
             fontWeight: FontWeight.w300,
+            textSize: 16,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: SizeUtils.defaultPadding),
@@ -97,7 +117,7 @@ class CreateNoteSheet extends StatelessWidget {
               child: FloatingActionButton(
                 heroTag: 'done',
                 onPressed: () async {
-                  String title = titleController.text;
+                  String title = _titleController.text;
 
                   if (title.length < 3) {
                     showDialog(
@@ -110,9 +130,7 @@ class CreateNoteSheet extends StatelessWidget {
                     try {
                       var note = Note(
                         title: title,
-                        description: Provider.of<HomeModel>(context, listen: false)
-                            .descriptionController
-                            .text,
+                        description: _descriptionController.text,
                         favorite: false,
                         type: Provider.of<HomeModel>(context, listen: false).getSelectedType(),
                         content: '',
@@ -126,7 +144,7 @@ class CreateNoteSheet extends StatelessWidget {
                       Navigator.push(
                         context,
                         SlideAnimationRoute(
-                          builder: (context) => NoteScreen(
+                          builder: (context) => NoteEditScreen(
                             index: index,
                           ),
                         ),
@@ -148,27 +166,6 @@ class CreateNoteSheet extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  TextField textField({
-    required TextEditingController controller,
-    required String hintText,
-    required FontWeight fontWeight,
-    double textSize = 14,
-  }) {
-    return TextField(
-      controller: controller,
-      maxLines: 1,
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: InputBorder.none,
-      ),
-      style: TextStyle(
-        color: Colors.black,
-        fontWeight: fontWeight,
-        fontSize: textSize,
       ),
     );
   }

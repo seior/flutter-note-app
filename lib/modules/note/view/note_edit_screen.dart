@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:note_app/data/models/note.dart';
+import 'package:note_app/modules/note/provider/note_model.dart';
 import 'package:note_app/modules/note/view/note_preview_screen.dart';
 import 'package:note_app/utils/color_utils.dart';
 import 'package:note_app/utils/size_utils.dart';
 import 'package:note_app/utils/slide_animation.dart';
+import 'package:note_app/widgets/default_listtile_widget.dart';
+import 'package:provider/provider.dart';
 
-class NoteScreen extends StatefulWidget {
+class NoteEditScreen extends StatefulWidget {
   final int index;
 
-  const NoteScreen({Key? key, required this.index}) : super(key: key);
+  const NoteEditScreen({Key? key, required this.index}) : super(key: key);
 
   @override
-  State<NoteScreen> createState() => _NoteScreenState();
+  State<NoteEditScreen> createState() => _NoteEditScreenState();
 }
 
-class _NoteScreenState extends State<NoteScreen> {
+class _NoteEditScreenState extends State<NoteEditScreen> {
   late final Box box;
   late final Note note;
   late final TextEditingController controller;
 
   @override
   void initState() {
-    box = Hive.box(Note.boxName);
     controller = TextEditingController();
+    box = Hive.box(Note.boxName);
     note = box.getAt(widget.index);
 
     controller.text = note.content;
@@ -41,15 +44,67 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<NoteModel>(context, listen: false).setTitle = note.title;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          note.title,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
+        title: Consumer<NoteModel>(
+          builder: (context, value, child) => Text(
+            value.title,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+          IconButton(
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => Wrap(
+                children: [
+                  DefaultListTileWidget(
+                    title: 'Edit title',
+                    icon: const Icon(Icons.title_outlined),
+                    onTap: () {},
+                  ),
+                  DefaultListTileWidget(
+                    title: 'Edit Description',
+                    icon: const Icon(Icons.subtitles_outlined),
+                    onTap: () {},
+                  ),
+                  DefaultListTileWidget(
+                    title: 'Edit Type',
+                    icon: const Icon(Icons.description_outlined),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.construction_outlined),
+                    title: const Text(
+                      'Show helper button',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                    trailing: Consumer<NoteModel>(
+                      builder: (context, value, child) => Checkbox(
+                        value: value.checkboxStatus,
+                        fillColor:
+                            MaterialStateProperty.all<Color>(const Color(ColorUtils.primary)),
+                        onChanged: (status) {
+                          value.changeHelperButton(status ?? false);
+                        },
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                  DefaultListTileWidget(
+                    title: 'Cancel',
+                    icon: const Icon(Icons.cancel_outlined),
+                    onTap: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+            icon: const Icon(Icons.more_vert),
+          ),
         ],
       ),
       body: SizedBox(
