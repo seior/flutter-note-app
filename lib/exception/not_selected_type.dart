@@ -1,0 +1,1 @@
+class NotSelectedTypeException implements Exception {}
